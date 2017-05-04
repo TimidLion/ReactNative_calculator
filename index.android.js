@@ -1,7 +1,7 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
+ * Simple React Native Calculator
+ * For practice
+ * Only for Integer values
  */
 
 import React, { Component } from 'react';
