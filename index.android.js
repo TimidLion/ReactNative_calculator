@@ -14,24 +14,19 @@ import {
   View
 } from 'react-native';
 
-class Number extends Component {
+class CalButton extends Component {
   constructor(props){
   	super(props);
-  	this.onButtonPress = this.onButtonPress.bind(this);
   }
-
-  onButtonPress(){
-  	Alert.alert(this.props.number.toString());
-  };
 
   render(){
   	return (
-  		<View style={{width: 50, height: 50}}>
+  		<View style={{width: 50, height: 50,marginRight: 8,marginLeft: 8}}>
 	  		<Button
-			  onPress={this.onButtonPress}
-			  title={this.props.number.toString()}
+			  onPress={this.props.onButtonPress}
+			  title={this.props.char}
 			  color="#841584"
-			  accessibilityLabel="Learn more about this purple button"
+			  accessibilityLabel="button"
 			/>
 		</View>
   	);
@@ -41,10 +36,47 @@ class Number extends Component {
 class Board extends React.Component {
   constructor() {
     super();
+    this.state={
+    	value: '0',
+    	isFirst: true
+    };
+    this.handleClick = this.handleClick.bind(this);
+    this.renderNumber = this.renderNumber.bind(this);
+    this.renderOperator = this.renderOperator.bind(this);
+  }
+
+  handleClick(i) {
+  	if(i=='C') {
+  		this.setState({
+  			value: '0',
+  			isFirst: true
+  		})
+  		Alert.alert('All values are removed')
+  	} else if(i=='='){
+  		this.setState({
+  			value: eval(this.state.value)
+  		});
+  	} else {
+  		if(!this.state.isFirst){
+		  	this.setState({
+		  		value: this.state.value + i,
+		  		isFirst: false
+		  	});
+	  	} else {
+	  		this.setState({
+	  			value: i,
+	  			isFirst: false
+	  		});
+	  	}
+  	}
   }
 
   renderNumber(i) {
-    return <Number number={i} />;
+    return <CalButton char={i.toString()} onButtonPress={() => this.handleClick(i.toString())}/>;
+  }
+
+  renderOperator(op) {
+  	return <CalButton char={op} onButtonPress={() => this.handleClick(op)}/>;
   }
 
   render() {
@@ -52,42 +84,51 @@ class Board extends React.Component {
       <View style={{
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
       }}>
-        <View style={{flex: 0, flexDirection: 'row'}}>
+        <Text
+          style={styles.valueHolder}>
+          {this.state.value.toString()}
+        </Text>
+        <View style={{flex: 0, flexDirection: 'row', margin: 0, padding: 0}}>
           {this.renderNumber(1)}
           {this.renderNumber(2)}
           {this.renderNumber(3)}
           {this.renderNumber(0)}
         </View>
-        <View style={{flex: 0, flexDirection: 'row'}}>
+        <View style={{flex: 0, flexDirection: 'row', margin: 0, padding: 0}}>
           {this.renderNumber(4)}
           {this.renderNumber(5)}
           {this.renderNumber(6)}
+          {this.renderOperator('C')}
         </View>
-        <View style={{flex: 0, flexDirection: 'row', borderWidth: 0}}>
+        <View style={{flex: 0, flexDirection: 'row', margin: 0, padding: 0}}>
           {this.renderNumber(7)}
           {this.renderNumber(8)}
           {this.renderNumber(9)}
+          {this.renderOperator('=')}
+        </View>
+        <View style={{flex: 0, flexDirection: 'row', margin: 0, padding: 0}}>
+       	  {this.renderOperator('+')}
+       	  {this.renderOperator('-')}
+       	  {this.renderOperator('*')}
+       	  {this.renderOperator('/')}
         </View>
       </View>
     );
   }
 }
 
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 export default class ReactNative_Calc extends Component {
   constructor(props) {
   	super(props);
-  	this.state={
-  		value: 0
-  	};
   }
 
   render() {
     return (
       <View style={styles.container}>
-      	<Board value={this.state.value}/>
+      	<View style={{height:200}} />
+      	<Board />
       	<View style={{height:100}} />
 		<Text>
 			TimidLion's Calculator
@@ -104,15 +145,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  valueHolder: {
+  	height: 50, 
+  	justifyContent: 'center',
+  	alignItems: 'center',
+  	textAlign: 'right',
+  	backgroundColor: '#DDDDDD',
+  	marginVertical: 20,
+  	padding: 15
   },
 });
 
